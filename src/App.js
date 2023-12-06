@@ -1,25 +1,36 @@
-import logo from './logo.svg';
+import { BrowserRouter as Router, NavLink, Routes, Route } from "react-router-dom";
 import './App.css';
+import {InstrumentListPage} from "./InstrumentListPage";
+import { InstrumentSinglePage } from "./InstrumentSinglePage";
+import { InstrumentCreatePage } from "./InstrumentCreatePage";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  return(
+    <Router>
+      <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav">
+            <li className="nav-item">
+              <NavLink to={`/`} className="nav-link">
+                <span className="nav-link">Hangszerek</span>
+              </NavLink>
+            </li>
+            <li className="nav-item">
+            <NavLink to={`/uj-hangszer`} className="nav-link">
+                <span className="nav-link">Új hangszer</span>
+              </NavLink>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <Routes>
+        <Route path="/" element={<InstrumentListPage />} />
+        <Route path="/hangszer/:hangszerId" element={<InstrumentSinglePage />} />
+        <Route path="uj-hangszer" element={<InstrumentCreatePage />} />
+      </Routes>
+    </Router>
   );
+
 }
 
 export default App;
