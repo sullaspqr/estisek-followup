@@ -1,43 +1,47 @@
 import { useState, useEffect} from 'react';
-import { NavLink } from 'react-router-dom';
+import { useParams, NavLink } from 'react-router-dom';
 
 export function InstrumentSinglePage() {
 
-    const [instruments, setInstruments] = useState([]);
-    const [isFetchPending, setFetchPending] = useState(false);
+    const param = useParams();
+    const id = param.hangszerId;
+    const [instrument, setInstrument] = useState([]);
+    const [isPending, setPending] = useState(false);
 
     useEffect(() => {
-        setFetchPending(true);
-        fetch("https://kodbazis.hu/api/instruments", {credentials: "include"})
-        .then((res) => res.json())
-        .then((hangszerek) => setInstruments(hangszerek))
-        .catch(console.log)
-        .finally(() => {
-            setFetchPending(false);
-        });
-    }, []);
+        setPending(true);
+        (async() => {
+            try {
+        const res = await fetch(`https://kodbazis.hu/api/instruments/${id}`, {credentials: "include"})
+        const hangszer = await res.json();
+        setInstrument(hangszer);
+            } catch(error) {
+                console.log(error);
+            }
+        finally {
+            setPending(false);
+        }
+    })();
+ }, [id]);
     return (
-        <div className='p-5 m-auto text-center content bg-ivory'>
-            { isFetchPending ? (<div className='spinner-border'></div>) : (
-                <div>
-                    <h2>Hangszerek</h2>
-                    {instruments.map((instrument) => (
-                        <div className='card col-sm-3 d-inline-block m-1 p-2'>
-                            <h6 className='text-muted'>{instrument.brand}</h6>
-                            <h5 className='text-muted'>{instrument.name}</h5>
-                            <div>{instrument.price}.- HUF</div>
-                            <div className='small'>Készleten: {instrument.quantity} db</div>
-                            <div className='card-body'>
-                                <img className='img-fluid'
-                                style={{ maxHeight: 200}}
+        <div className='p-5 m-auto text-center content bg-lanvender'>
+            { isPending || !instrument.id ? (<div className='spinner-border'></div>) : (
+                <div className='card p-3'>
+                        <div className='card-body'>
+                            <h4>{instrument.brand}</h4>
+                            <h5 className='card-title'>{instrument.name}</h5>
+                            <div className='lead'>{instrument.price}.- HUF</div>
+                            <p>Készleten: {instrument.quantity} db</p>
+                            <NavLink to={"/"}>
+                                <img className='img-fluid rounded'
+                                style={{ maxHeight: "500px"}}
                                 alt="Ez amúgy egy kép volt!"
                                 src={instrument.imageURL ? instrument.imageURL : "https://via.placeholder.com/400x800"} />
+                            </NavLink>
                             </div>
                         </div>
 
-                    ))}
+                    )}
                 </div>
-            )}
-        </div>
-    );
+            );
 }
